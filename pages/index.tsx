@@ -1,15 +1,30 @@
+// pages/index.tsx
+
 import { useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 
-export default function Home() {
+// Definimos la interfaz para los resultados de la búsqueda
+interface SearchResult {
+  id: string;
+  title: string;
+  price: number;
+  currency_id: string;
+  permalink: string;
+}
+
+export default function Index() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await axios.get(`/api/search?query=${query}`);
-    setResults(response.data.results);
+    try {
+      const response = await axios.get(`/api/search?query=${query}`);
+      setResults(response.data.results);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
   };
 
   return (
@@ -17,7 +32,7 @@ export default function Home() {
       {/* Logo de Mercado Libre */}
       <div className="mb-4">
         <Image
-          src="/mercado-libre-logo.png"
+          src="/mercado-libre-logo.png" // Asegúrate de que el logo esté en la carpeta `public`
           alt="Mercado Libre Logo"
           width={150}
           height={50}
@@ -46,7 +61,7 @@ export default function Home() {
 
       {/* Resultados de la búsqueda */}
       <ul className="mt-8 w-3/4 text-center">
-        {results.map((item: any) => (
+        {results.map((item) => (
           <li key={item.id} className="bg-white p-4 rounded-md shadow-md mb-4">
             <h2 className="font-semibold text-lg">{item.title}</h2>
             <p className="text-gray-700">
